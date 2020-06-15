@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <button id="getjokes">Get Jokes</button>
+  <script>
+    function getJoke() {
+      return new Promise((resolve, reject) => {
+        $.getJSON("https://icanhazdadjoke.com", joke => {
+          if (joke) {
+            resolve(joke.joke)
+          } else {
+            reject("Could not get joke!")
+          }
+        })
+      })
+    }
+
+    // Main
+    function getAllJokes() {
+
+      let jokePromises = []
+
+      for(let i=0; i < 5; i++) { //makes our code DRY compared to the below code repeating .then
+        jokePromises.push(getJoke())
+      }
+
+      Promise.all(jokePromises)
+        .then(jokes => {
+          displayJokes(jokes) //rather than creating the functionality in the promise, instead we can write a function displayJokes that we can re-use
+      })
+        .catch(err => console.log(err))  
+    }
+
+    function displayJokes(jokes) {
+      let jokesDiv = document.createElement("div")
+      let body = document.querySelector("body")
+      body.appendChild(jokesDiv)
+      jokes.forEach(joke => {
+        let jokeParagraph = document.createElement("p")
+        jokeParagraph.innerText = joke
+        jokesDiv.appendChild(jokeParagraph)
+      });
+
+    }
+
+    document.querySelector("#getjokes").addEventListener("click", getAllJokes)
+
+    // getJoke()
+    // .then(joke => {
+    //   jokes.push(joke)
+    //   return getJoke() 
+    // })
+    // .then(joke => {
+    //   jokes.push(joke)
+    //   return getJoke() 
+    // })
+        // .then(joke => {
+    //   jokes.push(joke)
+    //   return getJoke() 
+    // })
+        // .then(joke => {
+    //   jokes.push(joke)
+    //   return getJoke() 
+    // })
+    // .catch(err => console.log(err))
+  </script>
+</body>
+
+</html>
